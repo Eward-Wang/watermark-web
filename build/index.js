@@ -1,4 +1,61 @@
-parcelRequire=function(e,r,n,t){var i="function"==typeof parcelRequire&&parcelRequire,o="function"==typeof require&&require;function u(n,t){if(!r[n]){if(!e[n]){var f="function"==typeof parcelRequire&&parcelRequire;if(!t&&f)return f(n,!0);if(i)return i(n,!0);if(o&&"string"==typeof n)return o(n);var c=new Error("Cannot find module '"+n+"'");throw c.code="MODULE_NOT_FOUND",c}p.resolve=function(r){return e[n][1][r]||r};var l=r[n]=new u.Module(n);e[n][0].call(l.exports,p,l,l.exports,this)}return r[n].exports;function p(e){return u(p.resolve(e))}}u.isParcelRequire=!0,u.Module=function(e){this.id=e,this.bundle=u,this.exports={}},u.modules=e,u.cache=r,u.parent=i,u.register=function(r,n){e[r]=[function(e,r){r.exports=n},{}]};for(var f=0;f<n.length;f++)u(n[f]);if(n.length){var c=u(n[n.length-1]);"object"==typeof exports&&"undefined"!=typeof module?module.exports=c:"function"==typeof define&&define.amd?define(function(){return c}):t&&(this[t]=c)}return u}({"7QCb":[function(require,module,exports) {
-"use strict";Object.defineProperty(exports,"__esModule",{value:!0});class t{constructor(t){this.setting=null,this.setting=Object.assign({id:"watermark-web",text:"",gutterX:15,gutterY:15,size:15,alpha:.35,width:200,angle:15},t)}init(){this.gWrapperDOM().gWatermarkDOM()}destory(){const t=document.getElementById(this.setting.id);t&&(t.innerHTML="")}gWrapperDOM(){const{id:t}=this.setting;let e=document.getElementById(t);return e||((e=document.createElement("div")).setAttribute("id",t),e.style.pointerEvents="none",e.style.position="fixed",e.style.top="0",e.style.zIndex="2000",e.style.width="100vw",e.style.height="100vh",e.style.display="flex",e.style.justifyContent="space-around",e.style.alignContent="space-around",e.style.flexWrap="wrap",document.body.appendChild(e)),this}gWatermarkDOM(){const t=Math.max(document.body.scrollWidth,document.body.clientWidth),e=Math.max(document.body.scrollHeight,document.body.clientHeight),i=Math.cos(this.setting.angle)*this.setting.size+Math.sin(this.setting.angle)*this.setting.width,s=Math.ceil(e/(i+2*this.setting.gutterY))*Math.ceil(t/(this.setting.width+2*this.setting.gutterX)),n=document.createDocumentFragment();for(let t=1;t<=s;t++){const t=document.createElement("div"),e=document.createTextNode(this.setting.text);t.appendChild(e),t.style.transform=`rotate(-${this.setting.angle}deg)`,t.style.width=this.setting.width+"px",t.style.marginLeft=this.setting.gutterX+"px",t.style.marginRight=this.setting.gutterX+"px",t.style.marginTop=this.setting.gutterY+"px",t.style.marginBottom=this.setting.gutterY+"px",t.style.opacity=this.setting.alpha+"",n.appendChild(t)}document.getElementById(this.setting.id).appendChild(n)}}exports.default=t;
-},{}]},{},["7QCb"], null)
-//# sourceMappingURL=/index.map
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+class Watermark {
+    constructor(setting) {
+        this.setting = null;
+        this.setting = Object.assign({ id: "watermark-web", text: "", gutterX: 15, gutterY: 15, size: 15, alpha: 0.35, width: 200, angle: 15 }, setting);
+    }
+    init() {
+        this.gWrapperDOM().gWatermarkDOM();
+    }
+    destory() {
+        const el = document.getElementById(this.setting.id);
+        if (!el)
+            return;
+        el.innerHTML = "";
+    }
+    gWrapperDOM() {
+        const { id } = this.setting;
+        let wrapper = document.getElementById(id);
+        if (!wrapper) {
+            wrapper = document.createElement("div");
+            wrapper.setAttribute("id", id);
+            wrapper.style.pointerEvents = "none";
+            wrapper.style.position = "fixed";
+            wrapper.style.top = "0";
+            wrapper.style.zIndex = "2000";
+            wrapper.style.width = "100vw";
+            wrapper.style.height = "100vh";
+            wrapper.style.display = "flex";
+            wrapper.style.justifyContent = "space-around";
+            wrapper.style.alignContent = "space-around";
+            wrapper.style.flexWrap = "wrap";
+            document.body.appendChild(wrapper);
+        }
+        return this;
+    }
+    gWatermarkDOM() {
+        const max_width = Math.max(document.body.scrollWidth, document.body.clientWidth);
+        const max_height = Math.max(document.body.scrollHeight, document.body.clientHeight);
+        const height = Math.cos(this.setting.angle) * this.setting.size +
+            Math.sin(this.setting.angle) * this.setting.width;
+        const total = Math.ceil(max_height / (height + 2 * this.setting.gutterY)) *
+            Math.ceil(max_width / (this.setting.width + 2 * this.setting.gutterX));
+        const dom = document.createDocumentFragment();
+        for (let i = 1; i <= total; i++) {
+            const span = document.createElement("div");
+            const text = document.createTextNode(this.setting.text);
+            span.appendChild(text);
+            span.style.transform = `rotate(-${this.setting.angle}deg)`;
+            span.style.width = this.setting.width + "px";
+            span.style.marginLeft = this.setting.gutterX + "px";
+            span.style.marginRight = this.setting.gutterX + "px";
+            span.style.marginTop = this.setting.gutterY + "px";
+            span.style.marginBottom = this.setting.gutterY + "px";
+            span.style.opacity = this.setting.alpha + "";
+            dom.appendChild(span);
+        }
+        document.getElementById(this.setting.id).appendChild(dom);
+    }
+}
+exports.default = Watermark;
