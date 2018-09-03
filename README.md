@@ -3,7 +3,9 @@
 #### Usage
 
 ```js
-const wm = new watermark({
+import Watermark from 'watermark-web'
+
+const wm = new Watermark({
   text: "ewardwang"
 }); // setting
 
