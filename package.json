@@ -1,6 +1,6 @@
 {
   "name": "watermark-web",
-  "version": "1.0.0",
+  "version": "0.0.3",
   "main": "./build/index.js",
   "license": "MIT",
   "files": [
@@ -14,5 +14,10 @@
   "scripts": {
     "build": "NODE_ENV=production node ./scripts/parcel.js",
     "test": "parcel ./example/index.html"
-  }
+  },
+  "keywords": [
+    "browser",
+    "watermark",
+    "typescript"
+  ]
 }
