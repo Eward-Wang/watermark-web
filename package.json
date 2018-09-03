@@ -1,11 +1,8 @@
 {
   "name": "watermark-web",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "main": "./build/index.js",
   "license": "MIT",
-  "files": [
-    "./build"
-  ],
   "devDependencies": {
     "jest": "^23.5.0",
     "parcel-bundler": "^1.9.7",
