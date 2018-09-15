@@ -1,13 +1,14 @@
 ### 水印用于现代浏览器
 
-#### Usage
+#### Simple Usage
 
 ```js
 import Watermark from 'watermark-web'
 
 const wm = new Watermark({
+  // setting 见下方详细说明
   text: "ewardwang"
-}); // setting
+});
 
 wm.init();
 
@@ -18,7 +19,7 @@ setTimeout(() => wm.destory(), 3000);
 
 ```typescript
 
-export type watermarkSettingType = {
+{
   /**
    * 包裹dom的id
    * @author Eward
