@@ -1,6 +1,6 @@
 {
   "name": "watermark-web",
-  "version": "0.0.6",
+  "version": "0.1.0",
   "main": "./build/index.js",
   "license": "MIT",
   "devDependencies": {
@@ -17,5 +17,6 @@
     "browser",
     "watermark",
     "typescript"
-  ]
+  ],
+  "dependencies": {}
 }

@@ -56,6 +56,8 @@ export type watermarkSettingType = {
 
 class Watermark {
   private setting: watermarkSettingType = null;
+  private styleSheetIndex: number = 0;
+  private styleSheet: CSSStyleSheet = null;
   constructor(setting: watermarkSettingType) {
     this.setting = {
       id: "watermark-web",
@@ -68,11 +70,19 @@ class Watermark {
       angle: 15,
       ...setting
     };
+    if (document.styleSheets.length === 0) {
+      const style = document.createElement("style");
+      document.head.appendChild(style);
+    }
+    this.styleSheetIndex = document.styleSheets.length - 1;
+    this.styleSheet = document.styleSheets[
+      this.styleSheetIndex
+    ] as CSSStyleSheet;
   }
   public init() {
     this.gWrapperDOM().gWatermarkDOM();
   }
-  public destory() {
+  public destory(): void {
     const el = document.getElementById(this.setting.id);
     if (!el) return;
     el.innerHTML = "";
@@ -82,23 +92,26 @@ class Watermark {
    * @author Eward
    * 18/08/31
    */
-  private gWrapperDOM() {
+  private gWrapperDOM(): this {
     const { id } = this.setting;
     let wrapper = document.getElementById(id);
+    const cssRule = `#${id} {
+      pointer-events: none;
+      position: fixed;
+      top: 0;
+      z-index: 9999;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: space-around;
+      align-content: space-around;
+      flex-wrap: wrap;
+    }`;
+
     if (!wrapper) {
+      this.styleSheet.insertRule(cssRule, this.styleSheetIndex);
       wrapper = document.createElement("div");
       wrapper.setAttribute("id", id);
-      // --------- 使用flexbox --------- created at 18.08.31 -- by Eward
-      wrapper.style.pointerEvents = "none";
-      wrapper.style.position = "fixed";
-      wrapper.style.top = "0";
-      wrapper.style.zIndex = "2000";
-      wrapper.style.width = "100vw";
-      wrapper.style.height = "100vh";
-      wrapper.style.display = "flex";
-      wrapper.style.justifyContent = "space-around";
-      wrapper.style.alignContent = "space-around";
-      wrapper.style.flexWrap = "wrap";
       document.body.appendChild(wrapper);
     }
     return this;
@@ -130,20 +143,20 @@ class Watermark {
 
     const dom = document.createDocumentFragment();
 
+    const cssRule = `#${this.setting.id} > div {
+      transform: rotate(-${this.setting.angle}deg);
+      width: ${this.setting.width}px;
+      margin: ${this.setting.gutterY}px ${this.setting.gutterX}px;
+      opacity: ${this.setting.alpha}
+    }`;
+    this.styleSheet.insertRule(cssRule, this.styleSheetIndex);
+
     for (let i = 1; i <= total; i++) {
       const span = document.createElement("div");
       const text = document.createTextNode(this.setting.text);
       span.appendChild(text);
-      span.style.transform = `rotate(-${this.setting.angle}deg)`;
-      span.style.width = this.setting.width + "px";
-      span.style.marginLeft = this.setting.gutterX + "px";
-      span.style.marginRight = this.setting.gutterX + "px";
-      span.style.marginTop = this.setting.gutterY + "px";
-      span.style.marginBottom = this.setting.gutterY + "px";
-      span.style.opacity = this.setting.alpha + "";
       dom.appendChild(span);
     }
-
     document.getElementById(this.setting.id).appendChild(dom);
   }
 }

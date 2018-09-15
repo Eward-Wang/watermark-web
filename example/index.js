@@ -6,7 +6,6 @@ const wm = new watermark({
 
 wm.init();
 
-
-setTimeout(() => {
-  wm.destory()
-}, 3000);
+// setTimeout(() => {
+//   wm.destory()
+// }, 3000);
