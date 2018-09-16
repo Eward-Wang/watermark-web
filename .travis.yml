@@ -1,9 +1,23 @@
+env:
+  global:
+    - GH_REF: github.com/NameIsEward/watermark-web.git
+    - secure: "D3jXRndd+HmMAFOtxy6s64InwKVTbm9fT8FvnIRE6rJKAz/fzjvwJ2Skx2cS5m41eF0RhQ3WtKpnw+KC8xc3rg8/tWRIi2ZFiR9T2Tdziy7qaWsM9Uk7mN7z8SENoxkgoT8jIeVw7kOAswUQUzIMc/Fmgcm0RfDhKEVh+xR8VrNaxD4bqgkbGr8LrrEnltr0KyQuWLwFM1AOLVJBTEktwX9iwv2lGKWvWvQpadwMNC8Zm+md8dSo5Nj/VP+hOgPP+eKrTCTvk57Tw4XH6WwDCOF15mHL76VvrZPbu4TV8Xo7jGHqxKnpDJVcmjhy82NP1Ugh6mHTgXPcMRuNJAzEG3Af5pot7b2O1dvZMPg3Y0ZYEnuHjmpvP/wDTdv6ZV0eddqXXHHjTGePcyx6c/srkDsZWo1KyL8mke9uAS9jnQ1R29xSVe96rdDvytZ2nrGbqu6mDymR/Bw/V2qyKQgtYvO1r8E4XpUvym0VINQUUsXupEPs44MFY6RtDQ26pxvfB6q44yPuEKCVC4hWie7746RvlLE6GUGk3gZ8nJ6/7/X75eoC+UkuDteIPD7wqxitk66icVjcB3EcxBS1D5HVhTvuH8JVqKywOtE3+HJv0h5e615nDH71SgGuZ8brmd9rJBzwzwkg5qMxXtkNKmHTrpQ/Wo/s1wAVGQ9qJGbNKUk="
+
 language: node_js
 
 node_js:
   - "node"
-  
+
 install:
   - npm install
 
-script: rm -rf dist && npm run build && git subtree push --prefix dist origin gh-pages
+before_script:
+  - git config user.name "eward"
+  - git config user.email "ewardwang@126.com"
+
+script: 
+  - rm -rf dist && npm run build
+
+after_script:
+  - git add dist && git commit -m "commit dist to subtree"
+  - git subtree push --prefix dist origin gh-pages  
