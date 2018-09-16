@@ -12,7 +12,7 @@
   "scripts": {
     "tsc": "tsc",
     "example": "parcel ./example/index.html",
-    "build": "parcel build ./example/index.html"
+    "build": "parcel build ./example/index.html --public-url . --no-source-maps"
   },
   "keywords": [
     "browser",
