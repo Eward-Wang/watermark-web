@@ -58,6 +58,9 @@ class Watermark {
   private setting: watermarkSettingType = null;
   private styleSheetIndex: number = 0;
   private styleSheet: CSSStyleSheet = null;
+  private lastTotal: number = 0;
+  private timer: number = null;
+  private resize = this.debounce(this.gWatermarkDOM, 300).bind(this);
   constructor(setting: watermarkSettingType) {
     this.setting = {
       id: "watermark-web",
@@ -80,12 +83,17 @@ class Watermark {
     ] as CSSStyleSheet;
   }
   public init() {
-    this.gWrapperDOM().gWatermarkDOM();
+    this.fillCss()
+      .gWrapperDOM()
+      .gWatermarkDOM();
+
+    window.addEventListener("resize", this.resize);
   }
   public destory(): void {
     const el = document.getElementById(this.setting.id);
     if (!el) return;
     el.innerHTML = "";
+    window.removeEventListener("resize", this.resize);
   }
   /**
    * 生成包裹层
@@ -95,7 +103,21 @@ class Watermark {
   private gWrapperDOM(): this {
     const { id } = this.setting;
     let wrapper = document.getElementById(id);
-    const cssRule = `#${id} {
+
+    if (!wrapper) {
+      wrapper = document.createElement("div");
+      wrapper.setAttribute("id", id);
+      document.body.appendChild(wrapper);
+    }
+    return this;
+  }
+  /**
+   * fill 样式
+   * @author Eward <ewardwang@126.com>
+   * 18/09/16
+   */
+  private fillCss(): this {
+    const wrapperCssRule = `#${this.setting.id} {
       pointer-events: none;
       position: fixed;
       top: 0;
@@ -107,21 +129,23 @@ class Watermark {
       align-content: space-around;
       flex-wrap: wrap;
     }`;
+    this.styleSheet.insertRule(wrapperCssRule, this.styleSheetIndex);
 
-    if (!wrapper) {
-      this.styleSheet.insertRule(cssRule, this.styleSheetIndex);
-      wrapper = document.createElement("div");
-      wrapper.setAttribute("id", id);
-      document.body.appendChild(wrapper);
-    }
+    const childCssRule = `#${this.setting.id} > div {
+      transform: rotate(-${this.setting.angle}deg);
+      width: ${this.setting.width}px;
+      margin: ${this.setting.gutterY}px ${this.setting.gutterX}px;
+      opacity: ${this.setting.alpha}
+    }`;
+    this.styleSheet.insertRule(childCssRule, this.styleSheetIndex);
     return this;
   }
   /**
-   * 循环生成每个水印dom
-   * @author Eward
-   * 18/08/31
+   * 计算生成个数
+   * @author Eward <ewardwang@126.com>
+   * 18/09/16
    */
-  private gWatermarkDOM() {
+  private calcTotal(): number {
     // --------- 取出屏幕宽高 --------- created at 18.08.31 -- by Eward
     const max_width = Math.max(
       document.body.scrollWidth,
@@ -138,26 +162,52 @@ class Watermark {
 
     // --------- 计算能生成多少个水印 --------- created at 18.08.31 -- by Eward
     const total =
-      Math.ceil(max_height / (height + 2 * this.setting.gutterY)) *
-      Math.ceil(max_width / (this.setting.width + 2 * this.setting.gutterX));
+      Math.ceil(max_height / (height + (this.setting.gutterY << 1))) *
+      Math.ceil(max_width / (this.setting.width + (this.setting.gutterX << 1)));
+    return total;
+  }
+  /**
+   * 循环生成每个水印dom
+   * @author Eward
+   * 18/08/31
+   */
+  private gWatermarkDOM() {
+    const total = this.calcTotal();
+    console.log(total, this.lastTotal);
+    if (this.lastTotal === total) return;
+    let needs2generate = 0;
+    if (this.lastTotal < total) {
+      needs2generate = (total - this.lastTotal) ^ 0;
+    } else {
+      document.getElementById(this.setting.id).innerHTML = "";
+      needs2generate = total;
+    }
+    this.lastTotal = total;
 
     const dom = document.createDocumentFragment();
-
-    const cssRule = `#${this.setting.id} > div {
-      transform: rotate(-${this.setting.angle}deg);
-      width: ${this.setting.width}px;
-      margin: ${this.setting.gutterY}px ${this.setting.gutterX}px;
-      opacity: ${this.setting.alpha}
-    }`;
-    this.styleSheet.insertRule(cssRule, this.styleSheetIndex);
-
-    for (let i = 1; i <= total; i++) {
+    for (let i = 1; i <= needs2generate; i++) {
       const span = document.createElement("div");
       const text = document.createTextNode(this.setting.text);
       span.appendChild(text);
       dom.appendChild(span);
     }
     document.getElementById(this.setting.id).appendChild(dom);
+  }
+  /**
+   * debounce
+   * @author Eward <ewardwang@126.com>
+   * 18/09/16
+   */
+  private debounce(fn: Function, time: number) {
+    let last: number;
+    return function() {
+      const ctx = this,
+        args = arguments;
+      clearTimeout(last);
+      last = setTimeout(function() {
+        fn.apply(ctx, args);
+      }, time);
+    };
   }
 }
 

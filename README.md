@@ -1,9 +1,11 @@
-### 水印用于现代浏览器
+### watermark-web
+
+![Version](https://img.shields.io/badge/watermark--web-0.1.0-brightgreen.svg)&nbsp;&nbsp;&nbsp;&nbsp;[![Build Status](https://travis-ci.com/NameIsEward/watermark-web.svg?branch=master)](https://travis-ci.com/NameIsEward/watermark-web)
 
 #### Simple Usage
 
 ```js
-import Watermark from 'watermark-web'
+import Watermark from "watermark-web";
 
 const wm = new Watermark({
   // setting 见下方详细说明
@@ -18,7 +20,6 @@ setTimeout(() => wm.destory(), 3000);
 #### Setting
 
 ```typescript
-
 {
   /**
    * 包裹dom的id
@@ -69,7 +70,4 @@ setTimeout(() => wm.destory(), 3000);
    */
   angle?: number;
 };
-
 ```
-
-
