@@ -59,8 +59,7 @@ class Watermark {
   private styleSheetIndex: number = 0;
   private styleSheet: CSSStyleSheet = null;
   private lastTotal: number = 0;
-  private timer: number = null;
-  private resize = this.debounce(this.gWatermarkDOM, 300).bind(this);
+  private resize = this.debounce(this.gWatermarkDOM, 100).bind(this);
   constructor(setting: watermarkSettingType) {
     this.setting = {
       id: "watermark-web",
@@ -173,7 +172,6 @@ class Watermark {
    */
   private gWatermarkDOM() {
     const total = this.calcTotal();
-    console.log(total, this.lastTotal);
     if (this.lastTotal === total) return;
     let needs2generate = 0;
     if (this.lastTotal < total) {
