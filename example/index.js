@@ -1,11 +1,18 @@
-import watermark from "../index.ts";
+import Watermark from "../index.ts";
 
-const wm = new watermark({
+const wm = new Watermark({
+  // setting 见下方详细说明
   text: "ewardwang"
 });
 
 wm.init();
 
-// setTimeout(() => {
-//   wm.destory()
-// }, 3000);
+setTimeout(
+  () =>
+    wm.change({
+      text: "china"
+    }),
+  1000
+);
+
+setTimeout(() => wm.destory(), 3000);

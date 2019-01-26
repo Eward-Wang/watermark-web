@@ -56,10 +56,8 @@ export type watermarkSettingType = {
 
 class Watermark {
   private setting: watermarkSettingType = null;
-  private styleSheetIndex: number = 0;
-  private styleSheet: CSSStyleSheet = null;
-  private lastTotal: number = 0;
-  private resize = this.debounce(this.gWatermarkDOM, 100).bind(this);
+  private wrapper: HTMLElement = null;
+  private update = this.debounce(this.gWatermarkDOM, 100).bind(this);
   constructor(setting: watermarkSettingType) {
     this.setting = {
       id: "watermark-web",
@@ -72,28 +70,21 @@ class Watermark {
       angle: 15,
       ...setting
     };
-    if (document.styleSheets.length === 0) {
-      const style = document.createElement("style");
-      document.head.appendChild(style);
-    }
-    this.styleSheetIndex = document.styleSheets.length - 1;
-    this.styleSheet = document.styleSheets[
-      this.styleSheetIndex
-    ] as CSSStyleSheet;
   }
-  public init() {
-    this.fillCss()
-      .gWrapperDOM()
-      .gWatermarkDOM();
-
-    window.addEventListener("resize", this.resize);
-  }
+  public init = () => (
+    this.gWrapperDOM().gWatermarkDOM(),
+    window.addEventListener("resize", this.update)
+  );
   public destory(): void {
+    window.removeEventListener("resize", this.update);
     const el = document.getElementById(this.setting.id);
     if (!el) return;
     el.innerHTML = "";
-    window.removeEventListener("resize", this.resize);
   }
+  public change = (param: Partial<watermarkSettingType>): void => (
+    (this.setting = { ...this.setting, ...param }), this.update()
+  );
+
   /**
    * 生成包裹层
    * @author Eward
@@ -101,42 +92,25 @@ class Watermark {
    */
   private gWrapperDOM(): this {
     const { id } = this.setting;
-    let wrapper = document.getElementById(id);
+    this.wrapper = document.getElementById(id);
 
-    if (!wrapper) {
-      wrapper = document.createElement("div");
-      wrapper.setAttribute("id", id);
-      document.body.appendChild(wrapper);
+    if (!this.wrapper) {
+      this.wrapper = document.createElement("div");
+      this.wrapper.setAttribute("id", id);
+      this.wrapper.style.cssText = `
+        pointer-events: none;
+        position: fixed;
+        top: 0;
+        z-index: 9999;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: space-around;
+        align-content: space-around;
+        flex-wrap: wrap;
+    `;
+      document.body.appendChild(this.wrapper);
     }
-    return this;
-  }
-  /**
-   * fill 样式
-   * @author Eward <ewardwang@126.com>
-   * 18/09/16
-   */
-  private fillCss(): this {
-    const wrapperCssRule = `#${this.setting.id} {
-      pointer-events: none;
-      position: fixed;
-      top: 0;
-      z-index: 9999;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      justify-content: space-around;
-      align-content: space-around;
-      flex-wrap: wrap;
-    }`;
-    this.styleSheet.insertRule(wrapperCssRule, this.styleSheetIndex);
-
-    const childCssRule = `#${this.setting.id} > div {
-      transform: rotate(-${this.setting.angle}deg);
-      width: ${this.setting.width}px;
-      margin: ${this.setting.gutterY}px ${this.setting.gutterX}px;
-      opacity: ${this.setting.alpha}
-    }`;
-    this.styleSheet.insertRule(childCssRule, this.styleSheetIndex);
     return this;
   }
   /**
@@ -172,24 +146,20 @@ class Watermark {
    */
   private gWatermarkDOM() {
     const total = this.calcTotal();
-    if (this.lastTotal === total) return;
-    let needs2generate = 0;
-    if (this.lastTotal < total) {
-      needs2generate = (total - this.lastTotal) ^ 0;
-    } else {
-      document.getElementById(this.setting.id).innerHTML = "";
-      needs2generate = total;
-    }
-    this.lastTotal = total;
 
-    const dom = document.createDocumentFragment();
-    for (let i = 1; i <= needs2generate; i++) {
-      const span = document.createElement("div");
-      const text = document.createTextNode(this.setting.text);
-      span.appendChild(text);
-      dom.appendChild(span);
+    let html = "";
+    for (let i = 1; i <= total; i++) {
+      html += `
+       <div style="transform: rotate(-${this.setting.angle}deg);width: ${
+        this.setting.width
+      }px;margin: ${this.setting.gutterY}px ${
+        this.setting.gutterX
+      }px;opacity: ${this.setting.alpha}">
+        ${this.setting.text}
+       </div>
+      `;
     }
-    document.getElementById(this.setting.id).appendChild(dom);
+    this.wrapper.innerHTML = html;
   }
   /**
    * debounce
@@ -197,7 +167,7 @@ class Watermark {
    * 18/09/16
    */
   private debounce(fn: Function, time: number) {
-    let last: number;
+    let last: NodeJS.Timeout;
     return function() {
       const ctx = this,
         args = arguments;

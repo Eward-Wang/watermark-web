@@ -1,7 +1,11 @@
 {
   "name": "watermark-web",
   "version": "0.1.1",
-  "main": "./build/index.js",
+  "main": "./index.js",
+  "files": [
+    "./index.js",
+    "index.d.ts"
+  ],
   "license": "MIT",
   "devDependencies": {
     "jest": "^23.5.0",
@@ -10,7 +14,7 @@
     "typescript-cli": "^0.1.0"
   },
   "scripts": {
-    "tsc": "tsc",
+    "tsc": "rm -rf build && tsc",
     "example": "parcel ./example/index.html",
     "build": "parcel build ./example/index.html --public-url . --no-source-maps"
   },

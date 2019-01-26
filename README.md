@@ -14,13 +14,26 @@ const wm = new Watermark({
 
 wm.init();
 
+setTimeout(
+  () =>
+    wm.change({
+      text: "china"
+    }),
+  1000
+);
+
 setTimeout(() => wm.destory(), 3000);
 ```
 
 #### Setting
 
 ```typescript
-{
+/**
+ * 生成网站水印
+ * @author Eward
+ * 18/08/31
+ */
+declare type watermarkSettingType = {
   /**
    * 包裹dom的id
    * @author Eward
@@ -70,4 +83,15 @@ setTimeout(() => wm.destory(), 3000);
    */
   angle?: number;
 };
+```
+
+### public functions
+
+```typescript
+declare class Watermark {
+  constructor(setting: watermarkSettingType);
+  init: () => void;
+  destory(): void;
+  change: (param: Partial<watermarkSettingType>) => void;
+}
 ```
