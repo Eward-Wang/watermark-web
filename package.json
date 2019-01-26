@@ -1,6 +1,6 @@
 {
   "name": "watermark-web",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "./index.js",
   "files": [
     "./index.js",
@@ -10,6 +10,7 @@
   "devDependencies": {
     "jest": "^23.5.0",
     "parcel-bundler": "^1.9.7",
+    "pre-commit": "^1.2.2",
     "typescript": "^3.0.3",
     "typescript-cli": "^0.1.0"
   },
@@ -18,6 +19,9 @@
     "example": "parcel ./example/index.html",
     "build": "parcel build ./example/index.html --public-url . --no-source-maps"
   },
+  "pre-commit": [
+    "tsc"
+  ],
   "keywords": [
     "browser",
     "watermark",
