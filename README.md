@@ -1,6 +1,6 @@
 ### watermark-web
 
-![Version](https://img.shields.io/npm/v/watermark-web.svg)&nbsp;&nbsp;&nbsp;&nbsp;[![Build Status](https://travis-ci.com/NameIsEward/watermark-web.svg?branch=master)](https://travis-ci.com/NameIsEward/watermark-web)
+![Version](https://img.shields.io/npm/v/watermark-web.svg)&nbsp;&nbsp;&nbsp;&nbsp;[![Build Status](https://travis-ci.com/Eward-Wang/watermark-web.svg?branch=master)](https://travis-ci.com/Eward-Wang/watermark-web)
 
 #### Simple Usage
 
