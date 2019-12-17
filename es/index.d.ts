@@ -52,38 +52,22 @@ export declare type watermarkSettingType = {
      * 18/08/31
      */
     angle?: number;
+    /**
+     * 更新频率
+     * @author Eward <ewardwang@126.com>
+     * @since 19/12/17
+     */
+    debounce?: 100;
 };
 declare class Watermark {
     private setting;
     private wrapper;
     private update;
-    constructor(setting: watermarkSettingType);
+    constructor(setting?: watermarkSettingType);
     init: () => void;
     destory(): void;
-    change: (param: Partial<watermarkSettingType>) => void;
-    /**
-     * 生成包裹层
-     * @author Eward
-     * 18/08/31
-     */
+    change: (param?: Partial<watermarkSettingType>) => void;
     private gWrapperDOM;
-    /**
-     * 计算生成个数
-     * @author Eward <ewardwang@126.com>
-     * 18/09/16
-     */
-    private calcTotal;
-    /**
-     * 循环生成每个水印dom
-     * @author Eward
-     * 18/08/31
-     */
     private gWatermarkDOM;
-    /**
-     * debounce
-     * @author Eward <ewardwang@126.com>
-     * 18/09/16
-     */
-    private debounce;
 }
 export default Watermark;

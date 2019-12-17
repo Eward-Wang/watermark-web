@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "CommonJS",
     "esModuleInterop": true,
-    "target": "es5",
+    "target": "es2015",
     "noImplicitAny": true,
     "moduleResolution": "node",
     "sourceMap": false,
     "baseUrl": ".",
-    "declaration": true
+    "declaration": true,
+    "outDir": "lib"
   },
-  "exclude": ["node_modules"]
+  "include": ["src"]
 }

@@ -1,3 +1,5 @@
+import { isObject, calcTotalNum, debounce } from "./util";
+
 /**
  * 生成网站水印
  * @author Eward
@@ -52,13 +54,21 @@ export type watermarkSettingType = {
    * 18/08/31
    */
   angle?: number;
+  /**
+   * 更新频率
+   * @author Eward <ewardwang@126.com>
+   * @since 19/12/17
+   */
+  debounce?: 100;
 };
 
 class Watermark {
   private setting: watermarkSettingType = null;
   private wrapper: HTMLElement = null;
-  private update = this.debounce(this.gWatermarkDOM, 100).bind(this);
-  constructor(setting: watermarkSettingType) {
+  private update = debounce(this.gWatermarkDOM, this.setting.debounce).bind(
+    this
+  );
+  constructor(setting?: watermarkSettingType) {
     this.setting = {
       id: "watermark-web",
       text: "",
@@ -68,7 +78,8 @@ class Watermark {
       alpha: 0.35,
       width: 200,
       angle: 15,
-      ...setting
+      debounce: 100,
+      ...((isObject(setting) && setting) || {})
     };
   }
   public init = () => (
@@ -81,15 +92,11 @@ class Watermark {
     if (!el) return;
     el.innerHTML = "";
   }
-  public change = (param: Partial<watermarkSettingType>): void => (
-    (this.setting = { ...this.setting, ...param }), this.update()
-  );
-
-  /**
-   * 生成包裹层
-   * @author Eward
-   * 18/08/31
-   */
+  public change = (param?: Partial<watermarkSettingType>): void => {
+    if (!isObject(param)) return;
+    this.setting = { ...this.setting, ...param };
+    this.update();
+  };
   private gWrapperDOM(): this {
     const { id } = this.setting;
     this.wrapper = document.getElementById(id);
@@ -113,69 +120,29 @@ class Watermark {
     }
     return this;
   }
-  /**
-   * 计算生成个数
-   * @author Eward <ewardwang@126.com>
-   * 18/09/16
-   */
-  private calcTotal(): number {
-    // --------- 取出屏幕宽高 --------- created at 18.08.31 -- by Eward
-    const max_width = Math.max(
-      document.body.scrollWidth,
-      document.body.clientWidth
-    );
-    const max_height = Math.max(
-      document.body.scrollHeight,
-      document.body.clientHeight
-    );
-    // --------- 计算出经过旋转后的水印实际高度 --------- created at 18.08.31 -- by Eward
-    const height =
-      Math.cos(this.setting.angle) * this.setting.size +
-      Math.sin(this.setting.angle) * this.setting.width;
-
-    // --------- 计算能生成多少个水印 --------- created at 18.08.31 -- by Eward
-    const total =
-      Math.ceil(max_height / (height + (this.setting.gutterY << 1))) *
-      Math.ceil(max_width / (this.setting.width + (this.setting.gutterX << 1)));
-    return total;
-  }
-  /**
-   * 循环生成每个水印dom
-   * @author Eward
-   * 18/08/31
-   */
   private gWatermarkDOM() {
-    const total = this.calcTotal();
+    if (!this.wrapper) {
+      this.gWrapperDOM();
+    }
+    const total = calcTotalNum(
+      Math.max(document.body.scrollWidth, document.body.clientWidth),
+      Math.max(document.body.scrollHeight, document.body.clientHeight),
+      this.setting.width,
+      this.setting.size,
+      this.setting.angle,
+      this.setting.gutterX,
+      this.setting.gutterY
+    );
 
     let html = "";
     for (let i = 1; i <= total; i++) {
       html += `
-       <div style="transform: rotate(-${this.setting.angle}deg);width: ${
-        this.setting.width
-      }px;margin: ${this.setting.gutterY}px ${
-        this.setting.gutterX
-      }px;opacity: ${this.setting.alpha}">
+       <div style="transform: rotate(-${this.setting.angle}deg);width: ${this.setting.width}px;margin: ${this.setting.gutterY}px ${this.setting.gutterX}px;opacity: ${this.setting.alpha}">
         ${this.setting.text}
        </div>
       `;
     }
     this.wrapper.innerHTML = html;
-  }
-  /**
-   * debounce
-   * @author Eward <ewardwang@126.com>
-   * 18/09/16
-   */
-  private debounce(fn: Function, time: number) {
-    let last: NodeJS.Timeout;
-    return function() {
-      const ctx = this,
-        args = arguments;
-      clearTimeout(last);
-      last = setTimeout(function() {
-        fn.apply(ctx, args);
-      }, time);
-    };
   }
 }
 

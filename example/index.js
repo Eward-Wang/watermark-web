@@ -1,4 +1,4 @@
-import Watermark from "../index.ts";
+import Watermark from "../src/index.ts";
 
 const wm = new Watermark({
   // setting 见下方详细说明
