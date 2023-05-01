@@ -1,4 +1,8 @@
 node_modules
+.idea
+.parcel-cache
+DS_Store
 .cache
 dist
 yarn.lock
+*.log
