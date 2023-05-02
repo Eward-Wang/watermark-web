@@ -17,4 +17,9 @@ setTimeout(
   1000
 );
 
-setTimeout(() => wm.destory(), 3000);
+setTimeout(() => {
+  wm.destory();
+  setTimeout(() => {
+    wm.init();
+  }, 1000);
+}, 3000);

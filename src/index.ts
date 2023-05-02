@@ -108,9 +108,10 @@ class Watermark {
     this.observer.disconnect();
     window.removeEventListener("resize", this.update);
     const el = document.getElementById(this.uuid);
+    if (el) {
+      document.body.removeChild(el);
+    }
     this.wrapper = null;
-    if (!el) return;
-    el.innerHTML = "";
   }
 
   public change = (param?: Partial<watermarkSettingType>): void => {
