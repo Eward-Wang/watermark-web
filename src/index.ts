@@ -188,7 +188,10 @@ class Watermark {
   }
 
   public destroy() {
-    this.observer.disconnect();
+    if (this.observer) {
+      this.observer.disconnect();
+      this.observer = null;
+    }
     if (this.wrapper) {
       if (this.observerWrapper) {
         this.observerWrapper.disconnect();

@@ -3,7 +3,8 @@ import Watermark from "../src";
 const wm = new Watermark({
   // setting 见下方详细说明
   text: "ewardwang",
-  alpha: 0.5,
+  alpha: 0.05,
+  angle: 15,
 });
 
 wm.init();
@@ -23,4 +24,3 @@ setTimeout(() => {
     wm.init();
   }, 1000);
 }, 3000);
-
