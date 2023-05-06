@@ -14,6 +14,8 @@ setTimeout(
     wm.change({
       text: "china",
       angle: 30,
+      gutterY: 100,
+      gutterX: 100,
     }),
   1000
 );

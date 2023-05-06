@@ -44,6 +44,11 @@ export type watermarkSettingType = {
    * @since 19/12/17
    */
   debounce?: number;
+  /**
+   * 字体大小
+   * @default 16px
+   */
+  fontSize?: number;
 };
 
 function uuid() {
@@ -62,19 +67,12 @@ function debounce(fn: Function, time: number) {
   };
 }
 
-function generateImage(option: {
-  fontSize?: number;
-  text: string;
-  paddingX?: number;
-  paddingY?: number;
-  angle?: number;
-  alpha?: number;
-}) {
+function generateImage(option: watermarkSettingType) {
   if (!option.text) throw new Error("text is invalid!");
   const fontSize = option.fontSize || 16;
   const text = option.text || "";
-  const paddingX = option.paddingX || 32;
-  const paddingY = option.paddingY || 16;
+  const gutterX = option.gutterX || 32;
+  const gutterY = option.gutterY || 16;
   const font = `${fontSize}px sans-serif `;
   const color = `rgba(0,0,0,${option.alpha || 0.3})`;
   const angle = option.angle || 15;
@@ -91,11 +89,11 @@ function generateImage(option: {
     fontWidth;
   const actualHeight =
     (Math.abs(Math.sin(angle * (Math.PI / 180))) * actualDiagonal +
-      paddingY * 2) *
+      gutterY * 2) *
     window.devicePixelRatio;
   const actualWidth =
     (Math.abs(Math.cos(angle * (Math.PI / 180))) * actualDiagonal +
-      paddingX * 2) *
+      gutterX * 2) *
     window.devicePixelRatio;
 
   canvas.width = actualWidth;
