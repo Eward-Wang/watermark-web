@@ -67,7 +67,15 @@ function debounce(fn: Function, time: number) {
   };
 }
 
-function generateImage(option: watermarkSettingType) {
+/**
+ * generate image by canvas
+ * @param option
+ */
+function generateImage(option: watermarkSettingType): {
+  width: number;
+  height: number;
+  base64: string;
+} {
   if (!option.text) throw new Error("text is invalid!");
   const fontSize = option.fontSize || 16;
   const text = option.text || "";
@@ -77,7 +85,7 @@ function generateImage(option: watermarkSettingType) {
   const color = `rgba(0,0,0,${option.alpha || 0.3})`;
   const angle = option.angle || 15;
 
-  const canvas = document.createElement("canvas");
+  const canvas = _createElement("canvas");
   const ctx = canvas.getContext("2d");
   ctx.font = font;
   ctx.fillStyle = color;
@@ -109,11 +117,39 @@ function generateImage(option: watermarkSettingType) {
   ctx.textBaseline = "middle";
   ctx.fillText(text, 0, 0);
   const result = canvas.toDataURL("image/png", 1);
-  return result;
+  return {
+    width: actualWidth / window.devicePixelRatio,
+    height: actualHeight / window.devicePixelRatio,
+    base64: result,
+  };
 }
 
 const isObject = (obj: any) =>
   obj && Object.prototype.toString.call(obj) === "[object Object]";
+
+// avoid api was changed
+function isNativeApi<T>(source: T, method: keyof T) {
+  if (!source || !method) return false;
+  return String(source?.[method]).toString().indexOf("[native code]") > -1;
+}
+
+function noop() {
+  throw new Error("本地api被非法劫持！");
+}
+
+function getNativeApi<T, K extends keyof T>(source: T, methodName: K): T[K] {
+  // @ts-ignore
+  if (!source || source[methodName] === undefined) return noop;
+  // @ts-ignore
+  if (isNativeApi(source, methodName)) return source[methodName].bind(source);
+  // @ts-ignore
+  return getNativeApi(source.__proto__, methodName);
+}
+
+const _appendChild = getNativeApi(document.body, "appendChild");
+const _removeChild = getNativeApi(document.body, "removeChild");
+const _contains = getNativeApi(document.body, "contains");
+const _createElement = getNativeApi(document, "createElement");
 
 class Watermark {
   private setting: watermarkSettingType = null;
@@ -195,8 +231,8 @@ class Watermark {
         this.observerWrapper.disconnect();
         this.observerWrapper = null;
       }
-      if (document.body.contains(this.wrapper)) {
-        document.body.removeChild(this.wrapper);
+      if (_contains(this.wrapper)) {
+        _removeChild(this.wrapper);
       }
       this.wrapper = null;
     }
@@ -211,17 +247,20 @@ class Watermark {
   private build() {
     this._refreshing = true;
     if (this.wrapper) {
-      if (document.body.contains(this.wrapper)) {
-        document.body.removeChild(this.wrapper);
+      if (_contains(this.wrapper)) {
+        _removeChild(this.wrapper);
       }
       this.observerWrapper.disconnect();
       this.observerWrapper = null;
       this.wrapper = null;
     }
-    this.wrapper = document.createElement("div");
+
+    const { width, height, base64 } = generateImage(this.setting);
+    this.wrapper = _createElement("div");
     this.wrapper.style.cssText = `
         overflow: hidden!important;
-        background-image:url(${generateImage(this.setting)}) !important;
+        background-size: ${width}px ${height}px !important;
+        background-image:url(${base64}) !important;
         position: fixed!important;
         top: 0!important;
         left: 0!important;
@@ -229,7 +268,7 @@ class Watermark {
         height: 100vh!important;
         z-index: 9999!important;
         pointer-events: none!important;`;
-    document.body.appendChild(this.wrapper);
+    _appendChild(this.wrapper);
     this.observerWrapper = new MutationObserver(this.observerWrapperCallback);
     this.observerWrapper.observe(this.wrapper, {
       attributes: true,
