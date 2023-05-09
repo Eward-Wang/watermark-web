@@ -130,7 +130,9 @@ const isObject = (obj: any) =>
 // avoid api was changed
 function isNativeApi<T>(source: T, method: keyof T) {
   if (!source || !method) return false;
-  return String(source?.[method]).toString().indexOf("[native code]") > -1;
+  return /^function.*?\(\)\s*\{[\s\S]*\[\s?native code\s?\][\s\S]*\}$/.test(
+    String(source?.[method])
+  );
 }
 
 function noop() {
