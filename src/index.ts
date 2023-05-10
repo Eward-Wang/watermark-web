@@ -60,8 +60,8 @@ function debounce(fn: Function, time: number) {
   return function () {
     let ctx = this,
       args = arguments;
-    clearTimeout(last);
-    last = setTimeout(function () {
+    _clearTimeout(last);
+    last = _setTimeout(function () {
       fn.apply(ctx, args);
     }, time);
   };
@@ -148,6 +148,10 @@ function getNativeApi<T, K extends keyof T>(source: T, methodName: K): T[K] {
   return getNativeApi(source.__proto__, methodName);
 }
 
+// store native api
+const _MutationObserver = window.MutationObserver;
+const _setTimeout = window.setTimeout;
+const _clearTimeout = window.clearTimeout;
 const _appendChild = getNativeApi(document.body, "appendChild");
 const _removeChild = getNativeApi(document.body, "removeChild");
 const _contains = getNativeApi(document.body, "contains");
@@ -179,7 +183,7 @@ class Watermark {
   public init = () => {
     this.build();
 
-    this.observer = new MutationObserver(this.observerCallback);
+    this.observer = new _MutationObserver(this.observerCallback);
     this.observer.observe(document.body, {
       childList: true,
     });
@@ -271,11 +275,11 @@ class Watermark {
         z-index: 9999!important;
         pointer-events: none!important;`;
     _appendChild(this.wrapper);
-    this.observerWrapper = new MutationObserver(this.observerWrapperCallback);
+    this.observerWrapper = new _MutationObserver(this.observerWrapperCallback);
     this.observerWrapper.observe(this.wrapper, {
       attributes: true,
     });
-    setTimeout(() => (this._refreshing = false));
+    _setTimeout(() => (this._refreshing = false));
   }
 }
 

@@ -2,30 +2,38 @@
 
 ![Version](https://img.shields.io/npm/v/watermark-web.svg)
 
-#### Simple Usage
+### 功能
+
+1. 能防止水印被删除和篡改，被修改后会自动触发重建
+2. 能防止本地api被篡改，比如通过修改appendChild api来使水印重建失效的想法将不会得到实现;
+3. 使用canvas绘制
+
+#### 使用
 
 ```js
 import Watermark from "watermark-web";
 
 const wm = new Watermark({
-    // setting 见下方详细说明
-    text: "ewardwang"
+    text: "hello world"
 });
 
+// start
 wm.init();
 
+// update setting
 setTimeout(
     () =>
         wm.change({
-            text: "china"
+            text: "hello github"
         }),
     1000
 );
 
-setTimeout(() => wm.destory(), 3000);
+// destroy
+setTimeout(() => wm.destroy(), 3000);
 ```
 
-#### Setting
+#### 配置
 
 ```typescript
 /**
@@ -77,7 +85,7 @@ type watermarkSettingType = {
 };
 ```
 
-### public functions
+### 暴露的方法
 
 ```typescript
 declare class Watermark {
